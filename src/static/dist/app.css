@@ -7,3 +7,8 @@ html, body {
 #map {
     height: 100%;
 }
+
+.location-search-box {
+    width: 700px;
+    margin: 0 auto;
+}
