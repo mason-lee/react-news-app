@@ -11,7 +11,7 @@ let Home = React.createClass({
         return {
             locations: null,
             map: null,
-            results: []
+            searchResults: []
         };
     },
 
@@ -32,8 +32,21 @@ let Home = React.createClass({
         });
         this.setState({map: map});
 
-        var infowindow = new google.maps.InfoWindow();
+        var infowindow = new google.maps.InfoWindow({
+            content: document.getElementById("info-window")
+        });
+
+        var autocomplete = new google.maps.places.Autocomplete(
+            document.getElementById("autocomplete"), {
+                types: ['(cities)'],
+                componentRestrictions: {'country': 'us'}
+            }
+        );
         var service = new google.maps.places.PlacesService(map);
+
+        autocomplete.addListener('place_changed', onPlaceChanged);
+
+
         service.nearbySearch({
             location: arg,
             radius: 500,
@@ -42,12 +55,11 @@ let Home = React.createClass({
     },
 
     callback(results, status) {
-        console.log('fn callback');
+        //console.log('fn callback');
         console.log(results);
         if (status === google.maps.places.PlacesServiceStatus.OK) {
-
             this.renderList(results);
-
+            // this.setState({searchResults: results});
             for (var i = 0; i < results.length; i++) {
                 this.createMarker(results[i]);
             }
@@ -55,15 +67,35 @@ let Home = React.createClass({
     },
 
     renderList(results) {
+        var listWrapper = document.querySelector(".business-wrapper");
         for (var i = 0; i < results.length; i++) {
-            var el = document.createElement("p");
-            el.textContent = results[i].name;
-            document.body.appendChild(el);
+            var outerDiv = document.createElement("div");
+            outerDiv.className="result-row";
+            var innerLeftDiv = document.createElement("div");
+            innerLeftDiv.className="result-row-left";
+            var innerRightDiv = document.createElement("div");
+            innerRightDiv.className = "result-row-right";
+            var businessName = document.createElement("a");
+            businessName.className = "biz-name";
+            var businessAddress = document.createElement("span");
+            businessAddress.className="biz-address";
+
+            // Set the content
+            businessName.innerHTML = results[i].name;
+            businessAddress.innerHTML = results[i].vicinity;
+
+            // Append
+            innerRightDiv.appendChild(businessName);
+            innerRightDiv.appendChild(businessAddress);
+            outerDiv.appendChild(innerLeftDiv);
+            outerDiv.appendChild(innerRightDiv);
+
+            listWrapper.appendChild(outerDiv);
         }
     },
 
     createMarker(place) {
-        console.log('fn createMarker', place);
+        //console.log('fn createMarker', place);
 
         var placeLoc = place.geometry.location;
         var marker = new google.maps.Marker({
@@ -76,9 +108,6 @@ let Home = React.createClass({
             infowindow.open(map, this);
         });
     },
-
-
-
     handleSearchKeyword(e) {
         this.setState({location: e.target.value});
     },
@@ -99,7 +128,7 @@ let Home = React.createClass({
 	                <form onSubmit={this.handleSearch}>
                         <div className="form-group">
                             <label>Where are you looking to cut your hair?</label>
-                            <input className="form-control" type="text" placeholder="Normal text" value={this.state.location || ''} onChange={this.handleSearchKeyword} />
+                            <input className="form-control" id="autocomplete" type="text" placeholder="Normal text" value={this.state.location || ''} onChange={this.handleSearchKeyword} />
                         </div>
                         <div className="form-group">
                             <button type="submit" className="btn btn-default">Search</button>
