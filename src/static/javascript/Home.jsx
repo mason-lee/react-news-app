@@ -2,9 +2,25 @@ import ReactDom from 'react-dom';
 import React from 'react';
 import Reqwest from 'reqwest';
 import Navbar from './Navbar';
+import BusinessList from './BusinessList';
 
 let Home = React.createClass({
 
+    getInitialState() {
+        // Initial state.
+        return {
+            locations: null,
+            map: null,
+            results: []
+        };
+    },
+
+    componentDidMount() {
+
+    },
+    /************************************************************
+    Google Places API Stuff
+    *************************************************************/
     searchMap(arg) {
         if (arg === undefined) {
             return;
@@ -61,17 +77,7 @@ let Home = React.createClass({
         });
     },
 
-    getInitialState() {
-        // Initial state.
-        return {
-            locations: null,
-            map: null
-        };
-    },
 
-    componentDidMount() {
-
-    },
 
     handleSearchKeyword(e) {
         this.setState({location: e.target.value});
@@ -83,23 +89,6 @@ let Home = React.createClass({
         // console.log(location);
         var searchingLocation = {lat: 34.0522, lng: -118.2437}
         this.searchMap(searchingLocation);
-        // var pyrmont = {lat: -33.867, lng: 151.195};
-
-
-
-
-
-
-        // Reqwest({
-	    //     url: "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&radius=500&type=hair_care&key=AIzaSyB2-0465Lm6kqucnBgemUvzKKr8lRjP9Tw",
-	    //     crossOrigin: true,
-	    //     success: function (resp) {
-	    //         console.log(resp)
-	    //     },
-	    //     complete: function() {
-        //
-	    //     }
-	    // });
 	},
 
 	render() {
@@ -117,14 +106,8 @@ let Home = React.createClass({
                         </div>
 	                </form>
 	            </div>
-				<div className="result-row">
-					<div className="result-row-left">
-						<img src="http://s3-media2.fl.yelpcdn.com/bphoto/VhZVrD2K8oksYB4iIGLmog/90s.jpg" alt="Photo of the business" className="biz-main-image"/>
-					</div>
-					<div className="result-row-right">
-						<a href="#" className="biz-name">Hair Salon Name</a>
-					</div>
-				</div>
+                <div className="business-wrapper pull-left col-md-6">
+                </div>
 			</div>
 		);
 	}
