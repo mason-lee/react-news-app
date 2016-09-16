@@ -7,7 +7,7 @@ let NavBar = React.createClass({
             <nav className="navbar navbar-default">
                 <div className="container-fluid">
                     <div className="navbar-header">
-                        <a className="navbar-brand" href="#">Project name</a>
+                        <a className="navbar-brand" href="#">Your Favorite News</a>
                     </div>
                 </div>
             </nav>

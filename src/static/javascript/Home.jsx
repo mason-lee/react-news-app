@@ -1,142 +1,73 @@
 import ReactDom from 'react-dom';
 import React from 'react';
-import Reqwest from 'reqwest';
+import $ from 'jquery';
 import Navbar from './Navbar';
-import BusinessList from './BusinessList';
+import NewsItem from './NewsItem';
+
+var newsApiKey = "2a24e8547c204bc5975d110569a6a2c5";
 
 let Home = React.createClass({
 
     getInitialState() {
         // Initial state.
         return {
-            locations: null,
-            map: null,
-            searchResults: []
+            source: undefined,
+            data: []
         };
     },
 
     componentDidMount() {
-
-    },
-    /************************************************************
-    Google Places API Stuff
-    *************************************************************/
-    searchMap(arg) {
-        if (arg === undefined) {
-            return;
-        }
-
-        var map = new google.maps.Map(document.getElementById('map'), {
-            center: arg,
-            zoom: 15
-        });
-        this.setState({map: map});
-
-        var infowindow = new google.maps.InfoWindow({
-            content: document.getElementById("info-window")
-        });
-
-        var autocomplete = new google.maps.places.Autocomplete(
-            document.getElementById("autocomplete"), {
-                types: ['(cities)'],
-                componentRestrictions: {'country': 'us'}
+        $.ajax({
+            url: 'https://newsapi.org/v1/articles?source=techcrunch' + '&apiKey=' + newsApiKey,
+            crossOrigin: true,
+            dataType: 'json',
+            cache: false,
+            success: function (data) {
+                // console.log(data);
+                this.setState({data: data.articles});
+            }.bind(this),
+            complete: function() {
             }
-        );
-        var service = new google.maps.places.PlacesService(map);
-
-        autocomplete.addListener('place_changed', onPlaceChanged);
-
-
-        service.nearbySearch({
-            location: arg,
-            radius: 500,
-            type: ['hair_care']
-        }, this.callback);
+        })
     },
 
-    callback(results, status) {
-        //console.log('fn callback');
-        console.log(results);
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-            this.renderList(results);
-            // this.setState({searchResults: results});
-            for (var i = 0; i < results.length; i++) {
-                this.createMarker(results[i]);
-            }
-        }
-    },
-
-    renderList(results) {
-        var listWrapper = document.querySelector(".business-wrapper");
-        for (var i = 0; i < results.length; i++) {
-            var outerDiv = document.createElement("div");
-            outerDiv.className="result-row";
-            var innerLeftDiv = document.createElement("div");
-            innerLeftDiv.className="result-row-left";
-            var innerRightDiv = document.createElement("div");
-            innerRightDiv.className = "result-row-right";
-            var businessName = document.createElement("a");
-            businessName.className = "biz-name";
-            var businessAddress = document.createElement("span");
-            businessAddress.className="biz-address";
-
-            // Set the content
-            businessName.innerHTML = results[i].name;
-            businessAddress.innerHTML = results[i].vicinity;
-
-            // Append
-            innerRightDiv.appendChild(businessName);
-            innerRightDiv.appendChild(businessAddress);
-            outerDiv.appendChild(innerLeftDiv);
-            outerDiv.appendChild(innerRightDiv);
-
-            listWrapper.appendChild(outerDiv);
-        }
-    },
-
-    createMarker(place) {
-        //console.log('fn createMarker', place);
-
-        var placeLoc = place.geometry.location;
-        var marker = new google.maps.Marker({
-            map: this.state.map,
-            position: place.geometry.location
-        });
-
-        google.maps.event.addListener(marker, 'click', function() {
-            infowindow.setContent(place.name);
-            infowindow.open(map, this);
-        });
-    },
-    handleSearchKeyword(e) {
-        this.setState({location: e.target.value});
-    },
-
-    handleSearch(e) {
-		e.preventDefault();
-        // var location = this.state.location.trim();
-        // console.log(location);
-        var searchingLocation = {lat: 34.0522, lng: -118.2437}
-        this.searchMap(searchingLocation);
+    selectSource(e) {
+        // this.setState({source: e.target.value});
+        // console.log(this.state.source);
+        // $.ajax({
+        //     url: 'https://newsapi.org/v1/articles?source=' + e.target.value + '&apiKey=' + newsApiKey,
+        //     crossOrigin: true,
+        //     success: function (resp) {
+        //         this.setState({articles: response.articles}.bind(this));
+        //     },
+        //     complete: function() {
+        //
+        //     }
+        // });
 	},
 
 	render() {
+        let newItems = [];
+        let keyCnt = 1;
+        this.state.data.map(function(article) {
+            newItems.push(
+                <div key={keyCnt++}>
+                    <NewsItem article={article} />
+                </div>
+            );
+
+        });
+
 		return (
 			<div>
                 <Navbar />
-				<div className="location-search-box">
-	                <form onSubmit={this.handleSearch}>
-                        <div className="form-group">
-                            <label>Where are you looking to cut your hair?</label>
-                            <input className="form-control" id="autocomplete" type="text" placeholder="Normal text" value={this.state.location || ''} onChange={this.handleSearchKeyword} />
-                        </div>
-                        <div className="form-group">
-                            <button type="submit" className="btn btn-default">Search</button>
-                        </div>
-	                </form>
-	            </div>
-                <div className="business-wrapper pull-left col-md-6">
-                </div>
+                <select className="form-control" value={this.state.source} onChange={this.selectSource}>
+                    <option value="techcrunch">Techcrunch</option>
+                    <option value="espn">Espn</option>
+                    <option value="hacker-news">Hacker News</option>
+                    <option value="the-verge">The Verge</option>
+                </select>
+                {newItems}
 			</div>
 		);
 	}
