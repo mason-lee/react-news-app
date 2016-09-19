@@ -11,7 +11,6 @@ let Home = React.createClass({
     getInitialState() {
         // Initial state.
         return {
-            source: undefined,
             data: []
         };
     },
@@ -23,12 +22,9 @@ let Home = React.createClass({
             dataType: 'json',
             cache: false,
             success: function (data) {
-                // console.log(data);
                 this.setState({data: data.articles});
-            }.bind(this),
-            complete: function() {
-            }
-        })
+            }.bind(this)
+        });
     },
 
     selectSource(e) {
@@ -48,14 +44,11 @@ let Home = React.createClass({
 
 	render() {
         let newItems = [];
-        let keyCnt = 1;
+        let articleCount = 0;
         this.state.data.map(function(article) {
             newItems.push(
-                <div key={keyCnt++}>
-                    <NewsItem article={article} />
-                </div>
+                <NewsItem article={article} key={articleCount++} />
             );
-
         });
 
 		return (
