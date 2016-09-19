@@ -9,6 +9,7 @@ import babelify from 'babelify';
 import watchify from 'watchify';
 import webserver from 'gulp-webserver';
 import gulp from 'gulp';
+import sass from 'gulp-sass';
 import del from 'del';
 
 let plugins = p();
@@ -52,11 +53,17 @@ gulp.task('js', () => {
     return bundle();
 });
 
-gulp.task('css', () => {
-
+gulp.task('sass', () => {
+    return gulp.src('src/static/sass/**/*.scss')
+        .pipe(sass().on('error', sass.logError))
+        .pipe(gulp.dest('src/static/dist/'));
 });
 
-gulp.task('default', ['js', 'css'], () => {
+gulp.task('sass:watch', () => {
+    gulp.watch('src/static/sass/**/*.scss', ['sass']);
+});
+
+gulp.task('default', ['js', 'sass', 'sass:watch'], () => {
 
 	gulp.src('src/static/dist')
 	    .pipe(webserver({
