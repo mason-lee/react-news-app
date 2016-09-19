@@ -3,3 +3,15 @@ nav {
 
 .body-wrapper {
   padding: 36px; }
+
+.newsItem {
+  margin-bottom: 36px; }
+
+.article-wrapper {
+  display: none; }
+
+.techcrunch-wrapper {
+  display: block; }
+
+.espn-wrapper {
+  display: block; }

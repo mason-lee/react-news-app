@@ -9,11 +9,11 @@ let NewsItem = React.createClass({
 
     render() {
         return(
-            <div>
-                {this.props.article.title}
-                <h1>
+            <div className="newsItem">
+                <h4 className="news-title">{this.props.article.title}</h4>
+                <span>
                     {this.props.article.author}
-                </h1>
+                </span>
             </div>
 
         );
