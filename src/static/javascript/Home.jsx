@@ -3,6 +3,7 @@ import React from 'react';
 import $ from 'jquery';
 import Navbar from './Navbar';
 import NewsItem from './NewsItem';
+
 var newsApiKey = "2a24e8547c204bc5975d110569a6a2c5";
 
 let Home = React.createClass({
